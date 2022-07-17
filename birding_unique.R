@@ -8,29 +8,26 @@ library(grid)
 library(tidyverse)
 library(shadowtext)
 
-#Working directory
-setwd("/Users/mjo-air/Programming/R")
-
 #Colours
 BLUE <- "#076fa2"
 
-#API key for Google Maps
-register_google(key = "")
-
 #Map of Bielefeld, centered on Stauteich 3
-stauteich_3 <- get_googlemap("bielefeld stauteich III", zoom = 14, maptype = "satellite")
+bielefeld <- get_googlemap("Tieplatz Heepen Bielefeld", zoom = 13, maptype = "satellite")
 
 #The variable used to get the sum of all birds that were seen at a particular location
 #all_birds_sum_var <- read.csv("birding.csv", stringsAsFactors = F, na.strings="`")[,c('Location.1', 'Longitude', 'Latitude', 'Number', 'Common')]
 
 #The variable used to get the sum of unique birds that were seen at a particular location
-unique_birds_sum_var <- read.csv("birding.csv", stringsAsFactors = F, na.strings="`")[,c('Location.1', 'Longitude', 'Latitude', 'Common')]
+unique_birds_sum_var <- read.csv(file=file.choose(), stringsAsFactors = F, na.strings="`")[,c('Location.1', 'Longitude', 'Latitude', 'Common')]
 
 #Convert to tibble
 locations <- as_tibble(unique_birds_sum_var)
 
 #Find how many unique sightings there are in this location
 per_location_unique <- unique(locations)
+
+#Remove text in brackets
+per_location_unique$Location.1 <- gsub("\\s*\\[[^\\)]+\\]","",as.character(per_location_unique$Location.1))
 
 #Do some grouping
 per_location <- per_location_unique %>% 
@@ -55,7 +52,7 @@ ggplot(per_location) +
   geom_col(aes(sum, Location.1), fill = BLUE, width = 0.6)
 
 #Google Maps map
-ggmap(bw_map) +
+ggmap(bielefeld) +
 geom_point(data = per_location,
            aes(x = Longitude, y = Latitude, size=sum),
            color = "red", alpha = 0.5) +

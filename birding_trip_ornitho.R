@@ -7,15 +7,15 @@ library(ggrepel)
 library(magrittr)
 
 #Google API key
-register_google(key = "")
+#register_google(key = "")
 
 #Google Maps view
-stauteich_3 <- get_googlemap("bielefeld stauteich III", zoom = 14, maptype = "satellite")
+stauteich_3 <- get_googlemap("Obersee Bielefeld", zoom = 14, maptype = "satellite")
 
 #Set working directory
-setwd("/Users/mjo-air/Programming/R")
+#setwd("/Users/mjo-air/Programming/R")
 
-#Choose Ornihto export
+#Choose Ornitho export
 locations <- read.csv(file=file.choose(), sep = "\t")[,c('COORD_LAT', 'COORD_LON', 'TOTAL_COUNT', 'NAME_SPECIES', 'PLACE')]
 
 #Remove first row
@@ -30,22 +30,22 @@ locations$COORD_LAT %<>% as.double
 locations$TOTAL_COUNT %<>% as.integer
 
 #Total number of birds per location
-#per_location <- locations %>% 
- # group_by(PLACE, COORD_LAT, COORD_LON) %>% 
-  #summarise(sum = sum(TOTAL_COUNT)) %>% 
-  #arrange(desc(sum))
-
-#Total number of birds if Psalm is stupid
-per_location <- locations %>%
-  group_by(PLACE) %>%
-  mutate(across(starts_with("COORD_"), last)) %>%
-  ungroup()
-
-per_location <- per_location %>% 
+per_location <- locations %>% 
   group_by(PLACE, COORD_LAT, COORD_LON) %>% 
   summarise(sum = sum(TOTAL_COUNT)) %>% 
   arrange(desc(sum))
 
+#Total number of birds if Psalm is stupid 1
+#per_location <- locations %>%
+#  group_by(PLACE) %>%
+#  mutate(across(starts_with("COORD_"), last)) %>%
+#  ungroup()
+
+#Total number of birds if Psalm is stupid 2
+#per_location <- per_location %>% 
+#  group_by(PLACE, COORD_LAT, COORD_LON) %>% 
+#  summarise(sum = sum(TOTAL_COUNT)) %>% 
+#  arrange(desc(sum))
 
 #Remove text in brackets
 per_location$PLACE <- gsub("\\s*\\[[^\\)]+\\]","",as.character(per_location$PLACE))
